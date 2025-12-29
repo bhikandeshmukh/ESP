@@ -6,8 +6,6 @@
     
     <!-- Shizuku Permissions -->
     <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" 
-        android:protectionLevel="signature" />
 
     <application
         android:allowBackup="false"
@@ -26,7 +24,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Shizuku -->
+        <!-- Shizuku Provider -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
@@ -35,9 +33,15 @@
             android:multiprocess="false"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
+        <!-- Shizuku v13 Support -->
         <meta-data
             android:name="moe.shizuku.client.V3_SUPPORT"
             android:value="true" />
+        
+        <!-- Optional: App description for Shizuku -->
+        <meta-data
+            android:name="rikka.shizuku.client.description"
+            android:value="Game ESP - Memory reading and overlay for games" />
 
     </application>
 
