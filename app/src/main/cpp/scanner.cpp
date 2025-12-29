@@ -67,8 +67,8 @@ DWORD Scanner::scanPattern(const Pattern& pattern, DWORD start, DWORD end) {
             
             if (found) {
                 DWORD result = addr + i + pattern.resultOffset;
-                LOGI("Pattern '%s' found at 0x%X (result: 0x%X)", 
-                     pattern.name, addr + i, result);
+                LOGI("Pattern '%s' found at 0x%lX (result: 0x%lX)", 
+                     pattern.name, (unsigned long)(addr + i), (unsigned long)result);
                 return result;
             }
         }

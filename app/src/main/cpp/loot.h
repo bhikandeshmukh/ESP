@@ -4,6 +4,7 @@
 #include "types.h"
 #include "features.h"
 #include "shizuku_memory.h"
+#include "overlay.h"
 #include <vector>
 #include <unordered_map>
 

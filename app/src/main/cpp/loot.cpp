@@ -1,4 +1,5 @@
 #include "loot.h"
+#include "overlay.h"
 #include <android/log.h>
 #include <cmath>
 

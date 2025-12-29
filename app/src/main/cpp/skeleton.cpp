@@ -110,8 +110,9 @@ void Skeleton::draw(Overlay* overlay, Color color, float thickness) {
 }
 
 bool Skeleton::getBoneScreen(BoneID bone, Vector2& screen) {
-    if (bone >= 64 || !m_boneValid[bone]) return false;
-    screen = m_screenPositions[bone];
+    int boneIdx = static_cast<int>(bone);
+    if (boneIdx >= 64 || !m_boneValid[boneIdx]) return false;
+    screen = m_screenPositions[boneIdx];
     return true;
 }
 
