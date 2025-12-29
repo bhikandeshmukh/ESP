@@ -25,4 +25,14 @@ public class NativeLib {
     // ESP Info
     public static native int getEnemyCount();
     public static native int getEntityCount();
+    
+    // Settings - Boolean
+    public static native void setSetting(String key, boolean value);
+    
+    // Settings - Integer
+    public static native void setSettingInt(String key, int value);
+    
+    // Get settings
+    public static native boolean getSetting(String key);
+    public static native int getSettingInt(String key);
 }

@@ -34,6 +34,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private int gamePid = -1;
     private boolean isRunning = false;
     
+    // Floating Menu
+    private FloatingMenu floatingMenu;
+    
     // Shizuku UserService
     private IRemoteService remoteService = null;
     private boolean serviceConnected = false;
@@ -84,6 +87,21 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         Log.i(TAG, "Shizuku binder dead");
         updateStatus("Shizuku: Disconnected");
         serviceConnected = false;
+    };
+    
+    // Settings callback for floating menu
+    private final FloatingMenu.SettingsCallback settingsCallback = new FloatingMenu.SettingsCallback() {
+        @Override
+        public void onSettingChanged(String key, boolean value) {
+            NativeLib.setSetting(key, value);
+            Log.i(TAG, "Setting changed: " + key + " = " + value);
+        }
+        
+        @Override
+        public void onSettingChanged(String key, int value) {
+            NativeLib.setSettingInt(key, value);
+            Log.i(TAG, "Setting changed: " + key + " = " + value);
+        }
     };
     
     @Override
@@ -203,9 +221,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         });
         
         btnStop.setOnClickListener(v -> {
-            NativeLib.stop();
-            isRunning = false;
-            updateStatus("ESP Stopped");
+            stopESP();
         });
     }
     
@@ -214,9 +230,28 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
             if (NativeLib.startOverlay(surfaceView.getHolder().getSurface())) {
                 isRunning = true;
                 updateStatus("ESP Running - Enemies: " + NativeLib.getEnemyCount());
+                
+                // Show floating menu
+                if (floatingMenu == null) {
+                    floatingMenu = new FloatingMenu(this, settingsCallback);
+                }
+                floatingMenu.show();
+                
+                toast("ESP Started! Tap 'ESP' button for settings");
             } else {
                 updateStatus("Failed to start overlay");
             }
+        }
+    }
+    
+    private void stopESP() {
+        NativeLib.stop();
+        isRunning = false;
+        updateStatus("ESP Stopped");
+        
+        // Hide floating menu
+        if (floatingMenu != null) {
+            floatingMenu.hide();
         }
     }
     
@@ -237,15 +272,20 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (isRunning) {
-            NativeLib.stop();
+            stopESP();
         }
     }
     
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        NativeLib.stop();
+        stopESP();
         unbindUserService();
+        
+        if (floatingMenu != null) {
+            floatingMenu.destroy();
+            floatingMenu = null;
+        }
         
         Shizuku.removeRequestPermissionResultListener(permissionListener);
         Shizuku.removeBinderReceivedListener(binderReceivedListener);
