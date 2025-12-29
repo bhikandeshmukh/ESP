@@ -120,14 +120,25 @@ public class RemoteService extends IRemoteService.Stub {
                 return false;
             }
             
+            // Check if file is readable
+            if (!memFile.canRead()) {
+                Log.e(TAG, "Memory file not readable - SELinux issue?");
+                // Try to continue anyway, RandomAccessFile might work
+            }
+            
             mMemFile = new RandomAccessFile(memPath, "rw");
             mPid = pid;
             
             Log.i(TAG, "Attached to PID: " + pid);
             return true;
             
+        } catch (java.io.FileNotFoundException e) {
+            Log.e(TAG, "File not found - process might have died: " + e.getMessage());
+        } catch (SecurityException e) {
+            Log.e(TAG, "Security exception - SELinux blocking access: " + e.getMessage());
         } catch (Exception e) {
             Log.e(TAG, "attachProcess error: " + e.getMessage());
+            e.printStackTrace();
             
             // Try read-only mode
             try {
@@ -138,6 +149,7 @@ public class RemoteService extends IRemoteService.Stub {
                 return true;
             } catch (Exception e2) {
                 Log.e(TAG, "attachProcess read-only error: " + e2.getMessage());
+                e2.printStackTrace();
             }
         }
         return false;
